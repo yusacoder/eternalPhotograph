@@ -1,7 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 
-const IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp']);
+const IMAGE_EXTENSIONS = new Set([
+  '.jpg',
+  '.jpeg',
+  '.png',
+  '.gif',
+  '.webp',
+  '.svg',
+  '.bmp'
+]);
 
 function build() {
   const files = fs.readdirSync(__dirname);
@@ -9,15 +17,12 @@ function build() {
 
   for (const file of files) {
     const ext = path.extname(file).toLowerCase();
-    if (IMAGE_EXTENSIONS.has(ext)) {
-      // Exclude hidden files
-      if (!file.startsWith('.')) {
-        images.push(file);
-      }
+
+    if (IMAGE_EXTENSIONS.has(ext) && !file.startsWith('.')) {
+      images.push(file);
     }
   }
 
-  // Sort images alphabetically
   images.sort();
 
   fs.writeFileSync(
@@ -26,7 +31,9 @@ function build() {
     'utf-8'
   );
 
-  console.log(`Generated images.json successfully with ${images.length} images.`);
+  console.log(
+    `Generated images.json successfully with ${images.length} images.`
+  );
 }
 
 build();
