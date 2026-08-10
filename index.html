@@ -6,6 +6,8 @@
     <title>Eternal Production - Admin Panel</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load images.js for safe offline/local viewing (prevents CORS browser restrictions on file://) -->
+    <script src="images.js"></script>
     <style>
         body {
             background-color: #0f172a; /* Slate 900 */
@@ -71,7 +73,8 @@
 
         function handleLogin(e) {
             e.preventDefault();
-            const passwordInput = document.getElementById('password').value;
+            // Trim any leading/trailing whitespace automatically to avoid typing issues
+            const passwordInput = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('error-message');
 
             if (passwordInput === REQUIRED_PASS) {
@@ -97,6 +100,44 @@
             loadImages();
         }
 
+        function renderGallery(images) {
+            const galleryGrid = document.getElementById('gallery-grid');
+            galleryGrid.innerHTML = '';
+
+            if (!images || images.length === 0) {
+                galleryGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-slate-800 rounded-2xl border border-slate-700">
+                        <p class="text-slate-400 text-lg">Henüz hiç fotoğraf yüklenmemiş.</p>
+                    </div>
+                `;
+            } else {
+                images.forEach((img, idx) => {
+                    // Correctly handle subdirectory/local page structures using standard relative path resolving
+                    const fullUrl = new URL(img, window.location.href).href;
+                    const cardHtml = `
+                        <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
+                            <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
+                                <img src="${img}" alt="${img}" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105" onerror="this.src='https://placehold.co/400?text=Gorsel+Bulunamadi'">
+                            </div>
+                            <div class="p-6 flex flex-col flex-grow justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-slate-100 mb-1 truncate" title="${img}">${img}</h3>
+                                    <p class="text-xs text-slate-500 mb-4">Görsel Dosyası</p>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
+                                        <input type="text" readonly id="url-img-${idx}" value="${fullUrl}" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
+                                        <button onclick="copyUrl('${img}')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    galleryGrid.insertAdjacentHTML('beforeend', cardHtml);
+                });
+            }
+        }
+
         function loadImages() {
             const loadingIndicator = document.getElementById('gallery-loading');
             const galleryGrid = document.getElementById('gallery-grid');
@@ -104,6 +145,16 @@
             loadingIndicator.classList.remove('hidden');
             galleryGrid.classList.add('hidden');
 
+            // Strategy 1: Check if images.js has pre-loaded window.ETERNAL_IMAGES.
+            // This is perfect for offline files (file://) or static hosting without CORS errors.
+            if (window.ETERNAL_IMAGES && Array.isArray(window.ETERNAL_IMAGES)) {
+                renderGallery(window.ETERNAL_IMAGES);
+                loadingIndicator.classList.add('hidden');
+                galleryGrid.classList.remove('hidden');
+                return;
+            }
+
+            // Strategy 2: Fallback to fetching images.json dynamically
             fetch('images.json')
                 .then(res => {
                     if (!res.ok) {
@@ -112,40 +163,7 @@
                     return res.json();
                 })
                 .then(images => {
-                    galleryGrid.innerHTML = '';
-
-                    if (!images || images.length === 0) {
-                        galleryGrid.innerHTML = `
-                            <div class="col-span-full text-center py-12 bg-slate-800 rounded-2xl border border-slate-700">
-                                <p class="text-slate-400 text-lg">Henüz hiç fotoğraf yüklenmemiş.</p>
-                            </div>
-                        `;
-                    } else {
-                        images.forEach((img, idx) => {
-                            const fullUrl = window.location.origin + '/' + img;
-                            const cardHtml = `
-                                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
-                                    <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
-                                        <img src="${img}" alt="${img}" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
-                                    </div>
-                                    <div class="p-6 flex flex-col flex-grow justify-between">
-                                        <div>
-                                            <h3 class="text-lg font-bold text-slate-100 mb-1 truncate" title="${img}">${img}</h3>
-                                            <p class="text-xs text-slate-500 mb-4">Görsel Dosyası</p>
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
-                                                <input type="text" readonly id="url-img-${idx}" value="${fullUrl}" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
-                                                <button onclick="copyUrl('${img}')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            galleryGrid.insertAdjacentHTML('beforeend', cardHtml);
-                        });
-                    }
-
+                    renderGallery(images);
                     loadingIndicator.classList.add('hidden');
                     galleryGrid.classList.remove('hidden');
                 })
@@ -176,7 +194,7 @@
         }
 
         function copyUrl(filename) {
-            const url = window.location.origin + '/' + filename;
+            const url = new URL(filename, window.location.href).href;
             navigator.clipboard.writeText(url).then(() => {
                 showToast();
             }).catch(err => {
