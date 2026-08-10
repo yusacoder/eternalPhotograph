@@ -1,0 +1,9 @@
+{
+  "name": "eternal-admin-portal",
+  "version": "1.0.0",
+  "description": "Dynamic image portal with login protection",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {}
+}
