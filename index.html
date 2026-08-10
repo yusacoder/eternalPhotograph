@@ -35,109 +35,34 @@
         <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-slate-700 pb-6 gap-4">
             <div>
                 <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Yüklenen Fotoğraflar</h1>
-                <p class="text-slate-400 mt-1">Siteniz için kullanabileceğiniz görseller ve bağlantıları</p>
+                <p class="text-slate-400 mt-1">Siteniz için kullanabileceğiniz görseller ve bağlantıları (Otomatik listelenir)</p>
             </div>
             <button onclick="handleLogout()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition duration-150 border border-slate-700">Güvenli Çıkış</button>
         </div>
 
         <!-- Notification Toast -->
-        <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center space-x-2">
+        <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center space-x-2 z-50">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             <span>Bağlantı kopyalandı!</span>
         </div>
 
-        <!-- Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            <!-- Card 1 -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
-                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
-                    <img src="eternal-logo.jpg" alt="Eternal Logo" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
-                </div>
-                <div class="p-6 flex flex-col flex-grow justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-100 mb-1">eternal-logo.jpg</h3>
-                        <p class="text-xs text-slate-500 mb-4">Logo Görseli</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
-                            <input type="text" readonly id="url-eternal-logo" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
-                            <button onclick="copyUrl('eternal-logo.jpg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Loading Indicator -->
+        <div id="gallery-loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500 mb-4"></div>
+            <p class="text-slate-400">Fotoğraflar yükleniyor...</p>
+        </div>
 
-            <!-- Card 2 -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
-                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
-                    <img src="hirata-logo.jpg" alt="Hirata Logo" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
-                </div>
-                <div class="p-6 flex flex-col flex-grow justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-100 mb-1">hirata-logo.jpg</h3>
-                        <p class="text-xs text-slate-500 mb-4">Hirata Logo Görseli</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
-                            <input type="text" readonly id="url-hirata-logo" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
-                            <button onclick="copyUrl('hirata-logo.jpg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
-                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
-                    <img src="hirata-arkaplan.jpeg" alt="Hirata Arkaplan" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
-                </div>
-                <div class="p-6 flex flex-col flex-grow justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-100 mb-1">hirata-arkaplan.jpeg</h3>
-                        <p class="text-xs text-slate-500 mb-4">Hirata Arka Plan Görseli</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
-                            <input type="text" readonly id="url-hirata-arkaplan" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
-                            <button onclick="copyUrl('hirata-arkaplan.jpeg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
-                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
-                    <img src="konechiba-senpai-logo.jpg" alt="Konechiba Senpai Logo" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
-                </div>
-                <div class="p-6 flex flex-col flex-grow justify-between">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-100 mb-1">konechiba-senpai-logo.jpg</h3>
-                        <p class="text-xs text-slate-500 mb-4">Konechiba Senpai Logo Görseli</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
-                            <input type="text" readonly id="url-konechiba-senpai" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
-                            <button onclick="copyUrl('konechiba-senpai-logo.jpg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+        <!-- Dynamic Grid -->
+        <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 hidden">
+            <!-- Dynamic cards will be rendered here -->
         </div>
     </div>
 
     <script>
         const REQUIRED_PASS = "eternaladmin";
 
-        // Check if user is already logged in
+        // Check login status on page load
         window.onload = function() {
-            // Generate full urls for the images
-            document.getElementById('url-eternal-logo').value = window.location.origin + '/eternal-logo.jpg';
-            document.getElementById('url-hirata-logo').value = window.location.origin + '/hirata-logo.jpg';
-            document.getElementById('url-hirata-arkaplan').value = window.location.origin + '/hirata-arkaplan.jpeg';
-            document.getElementById('url-konechiba-senpai').value = window.location.origin + '/konechiba-senpai-logo.jpg';
-
             const loggedIn = localStorage.getItem('isEternalAdmin');
             if (loggedIn === 'true') {
                 showGallery();
@@ -162,21 +87,88 @@
         function showGallery() {
             const loginContainer = document.getElementById('login-container');
             const galleryContainer = document.getElementById('gallery-container');
-
-            // Apply clean state styling transitions
+            
+            // Layout Adjustments
             loginContainer.classList.add('hidden');
             galleryContainer.classList.remove('hidden');
             document.body.classList.remove('justify-center');
             document.body.classList.add('justify-start');
+
+            loadImages();
+        }
+
+        function loadImages() {
+            const loadingIndicator = document.getElementById('gallery-loading');
+            const galleryGrid = document.getElementById('gallery-grid');
+
+            loadingIndicator.classList.remove('hidden');
+            galleryGrid.classList.add('hidden');
+
+            fetch('images.json')
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('images.json bulunamadı! Lütfen önce "npm run build" komutunu çalıştırın.');
+                    }
+                    return res.json();
+                })
+                .then(images => {
+                    galleryGrid.innerHTML = '';
+                    
+                    if (!images || images.length === 0) {
+                        galleryGrid.innerHTML = `
+                            <div class="col-span-full text-center py-12 bg-slate-800 rounded-2xl border border-slate-700">
+                                <p class="text-slate-400 text-lg">Henüz hiç fotoğraf yüklenmemiş.</p>
+                            </div>
+                        `;
+                    } else {
+                        images.forEach((img, idx) => {
+                            const fullUrl = window.location.origin + '/' + img;
+                            const cardHtml = `
+                                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
+                                    <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
+                                        <img src="${img}" alt="${img}" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
+                                    </div>
+                                    <div class="p-6 flex flex-col flex-grow justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-bold text-slate-100 mb-1 truncate" title="${img}">${img}</h3>
+                                            <p class="text-xs text-slate-500 mb-4">Görsel Dosyası</p>
+                                        </div>
+                                        <div class="space-y-3">
+                                            <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
+                                                <input type="text" readonly id="url-img-${idx}" value="${fullUrl}" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
+                                                <button onclick="copyUrl('${img}')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            galleryGrid.insertAdjacentHTML('beforeend', cardHtml);
+                        });
+                    }
+
+                    loadingIndicator.classList.add('hidden');
+                    galleryGrid.classList.remove('hidden');
+                })
+                .catch(err => {
+                    console.error(err);
+                    loadingIndicator.classList.add('hidden');
+                    galleryGrid.innerHTML = `
+                        <div class="col-span-full text-center py-12 bg-red-950/20 text-red-400 rounded-2xl border border-red-800/50">
+                            <p class="font-semibold mb-2">Hata Oluştu!</p>
+                            <p class="text-sm text-slate-400">${err.message}</p>
+                        </div>
+                    `;
+                    galleryGrid.classList.remove('hidden');
+                });
         }
 
         function handleLogout() {
             localStorage.removeItem('isEternalAdmin');
             document.getElementById('password').value = '';
-
+            
             const loginContainer = document.getElementById('login-container');
             const galleryContainer = document.getElementById('gallery-container');
-
+            
             galleryContainer.classList.add('hidden');
             loginContainer.classList.remove('hidden');
             document.body.classList.remove('justify-start');
@@ -196,7 +188,7 @@
             const toast = document.getElementById('toast');
             toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
             toast.classList.add('translate-y-0', 'opacity-100');
-
+            
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
