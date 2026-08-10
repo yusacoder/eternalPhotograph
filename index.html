@@ -2,12 +2,206 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=https://eternalproduction.net">
-    <script>
-        window.location.replace("https://eternalproduction.net");
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eternal Production - Admin Panel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a; /* Slate 900 */
+        }
+    </style>
 </head>
-<body>
-    Yönlendiriliyorsunuz...
+<body class="text-slate-200 min-h-screen flex flex-col items-center justify-center font-sans">
+
+    <!-- Login Card -->
+    <div id="login-container" class="w-full max-w-md p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 transition duration-300">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Eternal Admin</h1>
+            <p class="text-slate-400 mt-2 text-sm">Giriş yapmak için şifrenizi girin</p>
+        </div>
+        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-6">
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-300">Şifre</label>
+                <input type="password" id="password" required class="mt-1 w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 text-white placeholder-slate-500" placeholder="••••••••">
+            </div>
+            <div id="error-message" class="text-red-400 text-sm hidden">Hatalı şifre! Lütfen tekrar deneyin.</div>
+            <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl font-semibold transition duration-155 ease-in-out shadow-lg hover:shadow-violet-900/30">Giriş Yap</button>
+        </form>
+    </div>
+
+    <!-- Gallery Container (Hidden by default) -->
+    <div id="gallery-container" class="hidden w-full max-w-6xl px-4 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-slate-700 pb-6 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Yüklenen Fotoğraflar</h1>
+                <p class="text-slate-400 mt-1">Siteniz için kullanabileceğiniz görseller ve bağlantıları</p>
+            </div>
+            <button onclick="handleLogout()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition duration-150 border border-slate-700">Güvenli Çıkış</button>
+        </div>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center space-x-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span>Bağlantı kopyalandı!</span>
+        </div>
+
+        <!-- Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+            <!-- Card 1 -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
+                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
+                    <img src="eternal-logo.jpg" alt="Eternal Logo" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
+                </div>
+                <div class="p-6 flex flex-col flex-grow justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-1">eternal-logo.jpg</h3>
+                        <p class="text-xs text-slate-500 mb-4">Logo Görseli</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
+                            <input type="text" readonly id="url-eternal-logo" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
+                            <button onclick="copyUrl('eternal-logo.jpg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
+                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
+                    <img src="hirata-logo.jpg" alt="Hirata Logo" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
+                </div>
+                <div class="p-6 flex flex-col flex-grow justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-1">hirata-logo.jpg</h3>
+                        <p class="text-xs text-slate-500 mb-4">Hirata Logo Görseli</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
+                            <input type="text" readonly id="url-hirata-logo" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
+                            <button onclick="copyUrl('hirata-logo.jpg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
+                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
+                    <img src="hirata-arkaplan.jpeg" alt="Hirata Arkaplan" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
+                </div>
+                <div class="p-6 flex flex-col flex-grow justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-1">hirata-arkaplan.jpeg</h3>
+                        <p class="text-xs text-slate-500 mb-4">Hirata Arka Plan Görseli</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
+                            <input type="text" readonly id="url-hirata-arkaplan" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
+                            <button onclick="copyUrl('hirata-arkaplan.jpeg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
+                <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
+                    <img src="konechiba-senpai-logo.jpg" alt="Konechiba Senpai Logo" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
+                </div>
+                <div class="p-6 flex flex-col flex-grow justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-100 mb-1">konechiba-senpai-logo.jpg</h3>
+                        <p class="text-xs text-slate-500 mb-4">Konechiba Senpai Logo Görseli</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
+                            <input type="text" readonly id="url-konechiba-senpai" value="" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
+                            <button onclick="copyUrl('konechiba-senpai-logo.jpg')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const REQUIRED_PASS = "eternaladmin";
+
+        // Check if user is already logged in
+        window.onload = function() {
+            // Generate full urls for the images
+            document.getElementById('url-eternal-logo').value = window.location.origin + '/eternal-logo.jpg';
+            document.getElementById('url-hirata-logo').value = window.location.origin + '/hirata-logo.jpg';
+            document.getElementById('url-hirata-arkaplan').value = window.location.origin + '/hirata-arkaplan.jpeg';
+            document.getElementById('url-konechiba-senpai').value = window.location.origin + '/konechiba-senpai-logo.jpg';
+
+            const loggedIn = localStorage.getItem('isEternalAdmin');
+            if (loggedIn === 'true') {
+                showGallery();
+            }
+        };
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const passwordInput = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-message');
+
+            if (passwordInput === REQUIRED_PASS) {
+                errorMsg.classList.add('hidden');
+                localStorage.setItem('isEternalAdmin', 'true');
+                showGallery();
+            } else {
+                errorMsg.classList.remove('hidden');
+                document.getElementById('password').value = '';
+            }
+        }
+
+        function showGallery() {
+            const loginContainer = document.getElementById('login-container');
+            const galleryContainer = document.getElementById('gallery-container');
+
+            // Apply clean state styling transitions
+            loginContainer.classList.add('hidden');
+            galleryContainer.classList.remove('hidden');
+            document.body.classList.remove('justify-center');
+            document.body.classList.add('justify-start');
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('isEternalAdmin');
+            document.getElementById('password').value = '';
+
+            const loginContainer = document.getElementById('login-container');
+            const galleryContainer = document.getElementById('gallery-container');
+
+            galleryContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+            document.body.classList.remove('justify-start');
+            document.body.classList.add('justify-center');
+        }
+
+        function copyUrl(filename) {
+            const url = window.location.origin + '/' + filename;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast();
+            }).catch(err => {
+                console.error('Kopyalama hatası:', err);
+            });
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
 </body>
 </html>
