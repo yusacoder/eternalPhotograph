@@ -1,0 +1,9 @@
+window.ETERNAL_IMAGES = [
+  "Wallpaper.png",
+  "eternal-logo.jpg",
+  "gissy.jpg",
+  "hirata-arkaplan.jpeg",
+  "hirata-logo.jpg",
+  "konechiba-senpai-logo.jpg",
+  "riasgremorytr.jpg"
+];

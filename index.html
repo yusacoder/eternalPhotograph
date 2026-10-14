@@ -1,67 +1,266 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eternal Production - Admin Panel</title>
+    <title>Eternal Production - Visual Asset Portal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Fallback static data script -->
+    <script src="images.js"></script>
+
     <style>
         body {
-            background-color: #0f172a; /* Slate 900 */
+            background-color: #080c14;
+            color: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-image:
+                radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 85% 80%, rgba(99, 102, 241, 0.12) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .heading-font {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel-glow {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            box-shadow: 0 0 35px -5px rgba(124, 58, 237, 0.25);
+        }
+
+        .glow-button {
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 20px -2px rgba(124, 58, 237, 0.4);
+        }
+        .glow-button:hover {
+            box-shadow: 0 6px 28px 0px rgba(124, 58, 237, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(139, 92, 246, 0.4);
+            box-shadow: 0 12px 30px -10px rgba(124, 58, 237, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080c14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
         }
     </style>
 </head>
-<body class="text-slate-200 min-h-screen flex flex-col items-center justify-center font-sans">
+<body class="min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden">
 
-    <!-- Login Card -->
-    <div id="login-container" class="w-full max-w-md p-8 bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 transition duration-300">
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Eternal Admin</h1>
-            <p class="text-slate-400 mt-2 text-sm">Giriş yapmak için şifrenizi girin</p>
+    <!-- Ambient Grid & Glow Effects -->
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-20" style="background-image: linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px); background-size: 4rem 4rem;"></div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-6 right-6 z-50 transform translate-x-full opacity-0 transition-all duration-300 ease-out pointer-events-none flex items-center gap-3 px-5 py-3.5 rounded-2xl bg-slate-900/90 text-white border border-emerald-500/40 shadow-2xl backdrop-blur-xl">
+        <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-check text-sm"></i>
         </div>
-        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-6">
-            <div>
-                <label for="password" class="block text-sm font-medium text-slate-300">Şifre</label>
-                <input type="password" id="password" required class="mt-1 w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 text-white placeholder-slate-500" placeholder="••••••••">
-            </div>
-            <div id="error-message" class="text-red-400 text-sm hidden">Hatalı şifre! Lütfen tekrar deneyin.</div>
-            <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 rounded-xl font-semibold transition duration-155 ease-in-out shadow-lg hover:shadow-violet-900/30">Giriş Yap</button>
-        </form>
+        <div>
+            <div id="toast-title" class="font-semibold text-sm text-slate-100">Kopyalandı!</div>
+            <div id="toast-msg" class="text-xs text-slate-400">Bağlantı panoya aktarıldı.</div>
+        </div>
     </div>
 
-    <!-- Gallery Container (Hidden by default) -->
-    <div id="gallery-container" class="hidden w-full max-w-6xl px-4 py-8">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b border-slate-700 pb-6 gap-4">
-            <div>
-                <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">Yüklenen Fotoğraflar</h1>
-                <p class="text-slate-400 mt-1">Siteniz için kullanabileceğiniz görseller ve bağlantıları (Otomatik listelenir)</p>
+    <!-- Login Container -->
+    <div id="login-container" class="w-full max-w-md p-8 sm:p-10 rounded-3xl glass-panel-glow z-10 my-10 transition-all duration-500 relative overflow-hidden">
+        <!-- Glowing Top Bar -->
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600"></div>
+
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-600/30 to-indigo-600/30 border border-violet-500/30 mb-4 text-violet-400 text-2xl shadow-inner">
+                <i class="fa-solid fa-crown"></i>
             </div>
-            <button onclick="handleLogout()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-medium transition duration-150 border border-slate-700">Güvenli Çıkış</button>
+            <h1 class="heading-font text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-violet-300 tracking-tight">Eternal Production</h1>
+            <p class="text-slate-400 text-xs sm:text-sm mt-2 font-medium">Özel Görsel Yönetim Portalı</p>
         </div>
 
-        <!-- Notification Toast -->
-        <div id="toast" class="fixed bottom-5 right-5 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none flex items-center space-x-2 z-50">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            <span>Bağlantı kopyalandı!</span>
-        </div>
+        <form id="login-form" onsubmit="handleLogin(event)" class="space-y-5">
+            <div>
+                <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Erişim Şifresi</label>
+                <div class="relative">
+                    <input type="password" id="password" required class="w-full px-4 py-3.5 bg-slate-900/80 border border-slate-700/80 rounded-2xl focus:outline-none focus:ring-2 focus:ring-violet-500/80 focus:border-violet-500 text-white placeholder-slate-500 text-sm transition" placeholder="Şifrenizi girin...">
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 transition text-sm">
+                        <i id="password-toggle-icon" class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+            </div>
 
-        <!-- Loading Indicator -->
-        <div id="gallery-loading" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-violet-500 mb-4"></div>
-            <p class="text-slate-400">Fotoğraflar yükleniyor...</p>
+            <div id="error-message" class="hidden flex items-center gap-2 p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl">
+                <i class="fa-solid fa-circle-exclamation shrink-0"></i>
+                <span>Hatalı şifre! Lütfen tekrar deneyiniz.</span>
+            </div>
+
+            <button type="submit" id="login-btn" class="w-full py-3.5 px-6 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white rounded-2xl font-bold text-sm tracking-wide glow-button flex items-center justify-center gap-2 transition duration-200">
+                <span>Giriş Yap</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </form>
+
+        <div class="mt-8 text-center border-t border-slate-800 pt-5">
+            <span class="text-xs text-slate-500 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-lock text-[10px] text-violet-400"></i>
+                Uçtan uca güvenli erişim
+            </span>
+        </div>
+    </div>
+
+    <!-- Main Content / Gallery Container (Hidden by default) -->
+    <div id="gallery-container" class="hidden w-full max-w-7xl px-4 sm:px-8 py-8 z-10 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="glass-panel rounded-3xl p-6 sm:p-8 mb-8 relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-600 via-indigo-500 to-purple-600"></div>
+
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-violet-500/10 text-violet-400 border border-violet-500/20 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            ADMIN PORTAL
+                        </span>
+                        <span id="image-count-badge" class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
+                            0 Görsel
+                        </span>
+                    </div>
+                    <h1 class="heading-font text-3xl sm:text-4xl font-extrabold text-slate-100 tracking-tight">Görsel Kütüphanesi</h1>
+                    <p class="text-slate-400 text-sm mt-1">Görselleriniz otomatik listelenir. Doğrudan bağlantıları anında kopyalayabilirsiniz.</p>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="flex items-center gap-3 w-full lg:w-auto">
+                    <button onclick="loadImages()" class="px-4 py-2.5 bg-slate-800/80 hover:bg-slate-700 text-slate-200 rounded-2xl text-xs sm:text-sm font-semibold transition border border-slate-700/80 flex items-center gap-2 shrink-0">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>Yenile</span>
+                    </button>
+                    <button onclick="handleLogout()" class="px-4 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 rounded-2xl text-xs sm:text-sm font-semibold transition border border-rose-500/20 flex items-center gap-2 shrink-0">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Güvenli Çıkış</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search & Controls Bar -->
+            <div class="mt-6 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="relative w-full sm:max-w-md">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                    <input type="text" id="search-input" oninput="filterImages()" placeholder="Görsel adına göre ara..." class="w-full pl-11 pr-4 py-2.5 bg-slate-900/90 border border-slate-700/80 rounded-2xl text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition">
+                </div>
+                <div class="text-xs text-slate-400 flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <span>Domain:</span>
+                    <code class="px-2.5 py-1 bg-slate-900 rounded-lg text-violet-400 border border-slate-800 font-mono text-[11px]">https://photograph.eternalproduction.net/</code>
+                </div>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div id="gallery-loading" class="flex-grow flex flex-col items-center justify-center py-20 text-center">
+            <div class="relative w-16 h-16 mb-4">
+                <div class="absolute inset-0 rounded-full border-4 border-violet-500/20"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-violet-500 border-t-transparent animate-spin"></div>
+            </div>
+            <p class="text-slate-300 font-medium">Görseller Yükleniyor...</p>
+            <p class="text-xs text-slate-500 mt-1">Lütfen bekleyiniz</p>
         </div>
 
         <!-- Dynamic Grid -->
-        <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 hidden">
-            <!-- Dynamic cards will be rendered here -->
+        <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden flex-grow">
+            <!-- Image cards rendered here -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-12 text-center py-6 border-t border-slate-800/60 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div>© Eternal Production. Tüm hakları saklıdır.</div>
+            <div class="flex items-center gap-4">
+                <span class="hover:text-slate-400 transition cursor-default">Güvenli Sunucu Portalı</span>
+                <span>•</span>
+                <span class="hover:text-slate-400 transition cursor-default">Otomatik JSON Aktarımı</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none" onclick="closeLightbox(event)">
+        <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+            <button onclick="closeLightboxDirect()" class="absolute -top-12 right-0 text-slate-400 hover:text-white text-2xl transition p-2">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="lightbox-img" src="" alt="" class="max-h-[75vh] max-w-full object-contain rounded-2xl shadow-2xl border border-slate-700/50">
+            <div class="mt-4 flex items-center justify-between w-full max-w-2xl px-4 py-3 bg-slate-900/90 border border-slate-800 rounded-2xl text-xs">
+                <span id="lightbox-filename" class="font-mono text-slate-300 font-semibold truncate max-w-xs"></span>
+                <button id="lightbox-copy-btn" onclick="" class="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl transition flex items-center gap-2">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Direkt Link Kopyala</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        const REQUIRED_PASS = "eternaladmin";
+        // SHA-256 Cryptographic Hash for admin password verification
+        const ADMIN_SHA256_HASH = "f9fe71a4ccbb4e900cde4ca26beaf6b6f2adea51e6b28411da2df06431d506b5";
+        const BASE_DOMAIN = "https://photograph.eternalproduction.net/";
 
-        // Check login status on page load
+        let allImages = [];
+
         window.onload = function() {
             const loggedIn = localStorage.getItem('isEternalAdmin');
             if (loggedIn === 'true') {
@@ -69,18 +268,95 @@
             }
         };
 
-        function handleLogin(e) {
+        async function hashString(str) {
+            if (window.crypto && window.crypto.subtle) {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } else {
+                // Simple SHA-256 fallback implementation if crypto.subtle is unavailable
+                return sha256Fallback(str);
+            }
+        }
+
+        // Lightweight SHA-256 fallback helper
+        function sha256Fallback(ascii) {
+            function rightRotate(value, amount) { return (value>>>amount) | (value<<(32-amount)); }
+            var mathPow = Math.pow, maxWord = mathPow(2, 32), lengthProperty = 'length', i, j, result = '', words = [], asciiBitLength = ascii[lengthProperty]*8,
+                hash = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19],
+                k = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+                     0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+                     0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+                     0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+                     0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+                     0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+                     0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+                     0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef4a394,0xc67178f2];
+            ascii += '\x80';
+            while (ascii[lengthProperty]%64 - 56) ascii += '\x00';
+            for (i = 0; i < ascii[lengthProperty]; i++) {
+                j = ascii.charCodeAt(i);
+                if (j>>8) return '';
+                words[i>>2] |= j << ((3 - i%4)*8);
+            }
+            words[words[lengthProperty]] = ((asciiBitLength/maxWord)|0);
+            words[words[lengthProperty]] = (asciiBitLength);
+            for (j = 0; j < words[lengthProperty];) {
+                var w = words.slice(j, j += 16);
+                var oldHash = hash;
+                hash = hash.slice(0, 8);
+                for (i = 0; i < 64; i++) {
+                    var w15 = w[i - 15], w2 = w[i - 2];
+                    var a = hash[0], e = hash[4];
+                    var temp1 = hash[7] + (rightRotate(e, 6) ^ rightRotate(e, 11) ^ rightRotate(e, 25)) + ((e & hash[5]) ^ ((~e) & hash[6])) + k[i] + (w[i] = (i < 16) ? w[i] : (w[i - 16] + (rightRotate(w15, 7) ^ rightRotate(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rightRotate(w2, 17) ^ rightRotate(w2, 19) ^ (w2 >>> 10))) | 0);
+                    var temp2 = (rightRotate(a, 2) ^ rightRotate(a, 13) ^ rightRotate(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+                    hash = [(temp1 + temp2)|0, hash[0], hash[1], hash[2], (hash[3] + temp1)|0, hash[4], hash[5], hash[6]];
+                }
+                for (i = 0; i < 8; i++) hash[i] = (hash[i] + oldHash[i]) | 0;
+            }
+            for (i = 0; i < 8; i++) {
+                for (j = 3; j >= 0; j--) {
+                    var b = (hash[i] >> (j * 8)) & 255;
+                    result += (b < 16 ? '0' : '') + b.toString(16);
+                }
+            }
+            return result;
+        }
+
+        async function handleLogin(e) {
             e.preventDefault();
             const passwordInput = document.getElementById('password').value;
             const errorMsg = document.getElementById('error-message');
+            const loginBtn = document.getElementById('login-btn');
 
-            if (passwordInput === REQUIRED_PASS) {
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Dorulanıyor...';
+
+            const computedHash = await hashString(passwordInput);
+
+            if (computedHash === ADMIN_SHA256_HASH) {
                 errorMsg.classList.add('hidden');
                 localStorage.setItem('isEternalAdmin', 'true');
                 showGallery();
             } else {
                 errorMsg.classList.remove('hidden');
                 document.getElementById('password').value = '';
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span>Giriş Yap</span><i class="fa-solid fa-arrow-right text-xs"></i>';
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const icon = document.getElementById('password-toggle-icon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fa-regular fa-eye';
             }
         }
 
@@ -88,13 +364,23 @@
             const loginContainer = document.getElementById('login-container');
             const galleryContainer = document.getElementById('gallery-container');
             
-            // Layout Adjustments
             loginContainer.classList.add('hidden');
             galleryContainer.classList.remove('hidden');
             document.body.classList.remove('justify-center');
-            document.body.classList.add('justify-start');
 
             loadImages();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('isEternalAdmin');
+            document.getElementById('password').value = '';
+
+            const loginContainer = document.getElementById('login-container');
+            const galleryContainer = document.getElementById('gallery-container');
+
+            galleryContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+            document.body.classList.add('justify-center');
         }
 
         function loadImages() {
@@ -106,93 +392,187 @@
 
             fetch('images.json')
                 .then(res => {
-                    if (!res.ok) {
-                        throw new Error('images.json bulunamadı! Lütfen önce "npm run build" komutunu çalıştırın.');
-                    }
+                    if (!res.ok) throw new Error('images.json okunamadı');
                     return res.json();
                 })
                 .then(images => {
-                    galleryGrid.innerHTML = '';
-                    
-                    if (!images || images.length === 0) {
-                        galleryGrid.innerHTML = `
-                            <div class="col-span-full text-center py-12 bg-slate-800 rounded-2xl border border-slate-700">
-                                <p class="text-slate-400 text-lg">Henüz hiç fotoğraf yüklenmemiş.</p>
-                            </div>
-                        `;
-                    } else {
-                        images.forEach((img, idx) => {
-                            const fullUrl = window.location.origin + '/' + img;
-                            const cardHtml = `
-                                <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden flex flex-col h-full shadow-lg hover:shadow-2xl transition duration-300">
-                                    <div class="h-64 overflow-hidden bg-slate-900 flex items-center justify-center relative group">
-                                        <img src="${img}" alt="${img}" class="object-contain max-h-full max-w-full transition duration-300 group-hover:scale-105">
-                                    </div>
-                                    <div class="p-6 flex flex-col flex-grow justify-between">
-                                        <div>
-                                            <h3 class="text-lg font-bold text-slate-100 mb-1 truncate" title="${img}">${img}</h3>
-                                            <p class="text-xs text-slate-500 mb-4">Görsel Dosyası</p>
-                                        </div>
-                                        <div class="space-y-3">
-                                            <div class="flex bg-slate-900 rounded-xl p-2.5 items-center justify-between border border-slate-700">
-                                                <input type="text" readonly id="url-img-${idx}" value="${fullUrl}" class="bg-transparent border-none text-slate-300 text-xs w-full focus:outline-none select-all truncate pr-2">
-                                                <button onclick="copyUrl('${img}')" class="bg-violet-600 hover:bg-violet-700 text-white text-xs px-3.5 py-1.5 rounded-lg font-semibold transition shrink-0">Kopyala</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            galleryGrid.insertAdjacentHTML('beforeend', cardHtml);
-                        });
-                    }
-
-                    loadingIndicator.classList.add('hidden');
-                    galleryGrid.classList.remove('hidden');
+                    allImages = images || [];
+                    renderGallery(allImages);
                 })
                 .catch(err => {
-                    console.error(err);
-                    loadingIndicator.classList.add('hidden');
-                    galleryGrid.innerHTML = `
-                        <div class="col-span-full text-center py-12 bg-red-950/20 text-red-400 rounded-2xl border border-red-800/50">
-                            <p class="font-semibold mb-2">Hata Oluştu!</p>
-                            <p class="text-sm text-slate-400">${err.message}</p>
-                        </div>
-                    `;
-                    galleryGrid.classList.remove('hidden');
+                    console.warn('images.json fetch ulaşılamadı, static images.js deneniyor...', err);
+                    if (window.ETERNAL_IMAGES && Array.isArray(window.ETERNAL_IMAGES)) {
+                        allImages = window.ETERNAL_IMAGES;
+                        renderGallery(allImages);
+                    } else {
+                        renderErrorState("Görsel listesi yüklenemedi. Lütfen 'npm run build' çalıştırın.");
+                    }
                 });
         }
 
-        function handleLogout() {
-            localStorage.removeItem('isEternalAdmin');
-            document.getElementById('password').value = '';
-            
-            const loginContainer = document.getElementById('login-container');
-            const galleryContainer = document.getElementById('gallery-container');
-            
-            galleryContainer.classList.add('hidden');
-            loginContainer.classList.remove('hidden');
-            document.body.classList.remove('justify-start');
-            document.body.classList.add('justify-center');
+        function renderGallery(images) {
+            const loadingIndicator = document.getElementById('gallery-loading');
+            const galleryGrid = document.getElementById('gallery-grid');
+            const imageCountBadge = document.getElementById('image-count-badge');
+
+            galleryGrid.innerHTML = '';
+            imageCountBadge.textContent = `${images.length} Görsel`;
+
+            if (images.length === 0) {
+                galleryGrid.innerHTML = `
+                    <div class="col-span-full text-center py-16 bg-slate-900/60 rounded-3xl border border-slate-800">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-800 text-slate-500 flex items-center justify-center mx-auto mb-4 text-2xl">
+                            <i class="fa-regular fa-image"></i>
+                        </div>
+                        <h3 class="text-slate-200 font-bold text-lg mb-1">Görsel Bulunamadı</h3>
+                        <p class="text-slate-400 text-xs max-w-md mx-auto">Sisteme yeni görsel ekledikten sonra "npm run build" çalıştırarak listenizi güncelleyebilirsiniz.</p>
+                    </div>
+                `;
+            } else {
+                images.forEach((filename, idx) => {
+                    const fullProdUrl = BASE_DOMAIN + filename;
+                    const fileExt = filename.split('.').pop().toUpperCase();
+
+                    const cardHtml = `
+                        <div class="glass-panel card-hover rounded-3xl overflow-hidden flex flex-col justify-between group">
+                            <!-- Image Container -->
+                            <div class="relative h-56 bg-slate-950/80 overflow-hidden flex items-center justify-center p-4 cursor-pointer" onclick="openLightbox('${filename}', '${fullProdUrl}')">
+                                <img src="${filename}" alt="${filename}" class="object-contain max-h-full max-w-full transition duration-500 group-hover:scale-105" loading="lazy">
+                                <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center gap-2">
+                                    <span class="px-3 py-1.5 bg-violet-600/90 text-white rounded-xl text-xs font-semibold backdrop-blur-md shadow-lg flex items-center gap-1.5">
+                                        <i class="fa-solid fa-expand"></i>
+                                        <span>Büyüt</span>
+                                    </span>
+                                </div>
+                                <span class="absolute top-3 right-3 px-2.5 py-1 bg-slate-900/80 text-violet-300 text-[10px] font-mono font-bold rounded-lg border border-violet-500/20 backdrop-blur-md">
+                                    ${fileExt}
+                                </span>
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="p-5 flex flex-col justify-between flex-grow">
+                                <div class="mb-4">
+                                    <h3 class="font-bold text-slate-100 text-sm truncate mb-1" title="${filename}">${filename}</h3>
+                                    <p class="text-[11px] text-slate-400">Üretim Bağlantısı (Otomatik)</p>
+                                </div>
+
+                                <!-- URL Box & Copy Button -->
+                                <div class="space-y-3">
+                                    <div class="flex items-center bg-slate-950/90 rounded-2xl p-2 border border-slate-800 focus-within:border-violet-500/50 transition">
+                                        <i class="fa-solid fa-link text-slate-500 text-xs ml-2.5 mr-2 shrink-0"></i>
+                                        <input type="text" readonly value="${fullProdUrl}" class="bg-transparent border-none text-violet-300 font-mono text-xs w-full focus:outline-none select-all truncate pr-2">
+                                        <button onclick="copyToClipboard('${fullProdUrl}', 'Görsel URL\\'si kopyalandı!')" class="px-3.5 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white text-xs rounded-xl font-bold transition shrink-0 flex items-center gap-1.5 shadow-md">
+                                            <i class="fa-regular fa-copy"></i>
+                                            <span>Kopyala</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Quick Tool Buttons -->
+                                    <div class="grid grid-cols-3 gap-2 pt-1">
+                                        <button onclick="copyToClipboard('<img src=\\'${fullProdUrl}\\' alt=\\'${filename}\\'>', 'HTML kodu kopyalandı!')" class="py-1.5 px-2 bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-xl text-[10px] font-medium transition border border-slate-800 text-center truncate">
+                                            HTML Tag
+                                        </button>
+                                        <button onclick="copyToClipboard('![${filename}](${fullProdUrl})', 'Markdown kodu kopyalandı!')" class="py-1.5 px-2 bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-xl text-[10px] font-medium transition border border-slate-800 text-center truncate">
+                                            Markdown
+                                        </button>
+                                        <a href="${filename}" target="_blank" class="py-1.5 px-2 bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-slate-200 rounded-xl text-[10px] font-medium transition border border-slate-800 text-center truncate flex items-center justify-center gap-1">
+                                            <span>Aç</span>
+                                            <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    galleryGrid.insertAdjacentHTML('beforeend', cardHtml);
+                });
+            }
+
+            loadingIndicator.classList.add('hidden');
+            galleryGrid.classList.remove('hidden');
         }
 
-        function copyUrl(filename) {
-            const url = window.location.origin + '/' + filename;
-            navigator.clipboard.writeText(url).then(() => {
-                showToast();
+        function filterImages() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            if (!query) {
+                renderGallery(allImages);
+                return;
+            }
+            const filtered = allImages.filter(filename => filename.toLowerCase().includes(query));
+            renderGallery(filtered);
+        }
+
+        function renderErrorState(message) {
+            const loadingIndicator = document.getElementById('gallery-loading');
+            const galleryGrid = document.getElementById('gallery-grid');
+
+            loadingIndicator.classList.add('hidden');
+            galleryGrid.innerHTML = `
+                <div class="col-span-full text-center py-12 bg-rose-950/20 text-rose-400 rounded-3xl border border-rose-800/40">
+                    <p class="font-bold mb-1">Hata Oluştu</p>
+                    <p class="text-xs text-slate-400">${message}</p>
+                </div>
+            `;
+            galleryGrid.classList.remove('hidden');
+        }
+
+        function copyToClipboard(text, message = 'Panoya kopyalandı!') {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Kopyalandı!', message);
             }).catch(err => {
-                console.error('Kopyalama hatası:', err);
+                // Fallback copy using textarea
+                const el = document.createElement('textarea');
+                el.value = text;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+                showToast('Kopyalandı!', message);
             });
         }
 
-        function showToast() {
+        function showToast(title, message) {
             const toast = document.getElementById('toast');
-            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-            toast.classList.add('translate-y-0', 'opacity-100');
-            
+            document.getElementById('toast-title').textContent = title;
+            document.getElementById('toast-msg').textContent = message;
+
+            toast.classList.remove('translate-x-full', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-x-0', 'opacity-100');
+
             setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('translate-x-full', 'opacity-0', 'pointer-events-none');
             }, 2500);
+        }
+
+        function openLightbox(filename, fullUrl) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            const fnLabel = document.getElementById('lightbox-filename');
+            const copyBtn = document.getElementById('lightbox-copy-btn');
+
+            img.src = filename;
+            fnLabel.textContent = filename;
+            copyBtn.onclick = function() { copyToClipboard(fullUrl, 'Görsel URL\'si kopyalandı!'); };
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+            }, 10);
+        }
+
+        function closeLightbox(e) {
+            if (e.target.id === 'lightbox-modal') {
+                closeLightboxDirect();
+            }
+        }
+
+        function closeLightboxDirect() {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
     </script>
 </body>
